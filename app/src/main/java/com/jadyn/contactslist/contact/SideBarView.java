@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -15,12 +14,12 @@ import com.jadyn.contactslist.R;
 
 
 /**
- * Created by Administrator on 2016/1/8.
+ * Created by jadyn on 2016/1/8.
  */
-public class SideBarView extends View{
-    public static String[] b = { "A", "B", "C", "D", "E", "F", "G", "H", "I",
+public class SideBarView extends View {
+    public static final String[] ALPHABET = {"A", "B", "C", "D", "E", "F", "G", "H", "I",
             "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
-            "W", "X", "Y", "Z", "#" };
+            "W", "X", "Y", "Z", "#"};
     private int selectPos = -1;
 
     private final int defaultNormalColor = Color.TRANSPARENT;
@@ -50,8 +49,8 @@ public class SideBarView extends View{
         super(context, attrs, defStyleAttr);
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.SideBarView, defStyleAttr, 0);
-        sideBarBgNorColor = typedArray.getColor(R.styleable.SideBarView_sidebar_nor_background,defaultNormalColor);
-        sideBarBgPressColor = typedArray.getColor(R.styleable.SideBarView_sidebar_press_background,defaultPressColor);
+        sideBarBgNorColor = typedArray.getColor(R.styleable.SideBarView_sidebar_nor_background, defaultNormalColor);
+        sideBarBgPressColor = typedArray.getColor(R.styleable.SideBarView_sidebar_press_background, defaultPressColor);
         sideBarTextSize = typedArray.getInt(R.styleable.SideBarView_sidebar_text_size, defaultTextSize);
         sideBarNorTextColor = typedArray.getColor(R.styleable.SideBarView_sidebar_text_color_nor, defaultNorTextColor);
         sideBarPressTextColor = typedArray.getColor(R.styleable.SideBarView_sidebar_text_color_press, defaultPressTextColor);
@@ -63,21 +62,22 @@ public class SideBarView extends View{
 
     Paint paint;
     Paint paintSelect;
+
     private void init() {
-        paint= new Paint() ;
+        paint = new Paint();
         paint.setAntiAlias(true);
         paint.setColor(sideBarNorTextColor);
         paint.setTypeface(Typeface.DEFAULT_BOLD);
         paint.setTextSize(sideBarTextSize);
-        paintSelect= new Paint() ;
+        paintSelect = new Paint();
         paintSelect.setAntiAlias(true);
         paintSelect.setTypeface(Typeface.DEFAULT_BOLD);
         paintSelect.setTextSize(sideBarTextSize);
         paintSelect.setColor(sideBarPressTextColor);
 
 
-
     }
+
     int height;
     int width;
     int perHeight;
@@ -88,23 +88,29 @@ public class SideBarView extends View{
 
         float x = event.getY();
         int position = (int) (x / perHeight);
+        if (position >= ALPHABET.length) {
+            position = ALPHABET.length - 1;
+        }
+        if (position < 0) {
+            position = 0;
+        }
 
-        switch (event.getAction()){
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 setBackgroundColor(sideBarBgPressColor);
                 selectPos = position;
-                if(listener != null)
-                    listener.onLetterSelected(b[selectPos]);
+                if (listener != null)
+                    listener.onLetterSelected(ALPHABET[selectPos]);
                 invalidate();
                 break;
 
 
             case MotionEvent.ACTION_MOVE:
-                if(position != selectPos){
+                if (position != selectPos) {
                     //切换到其他字母
                     selectPos = position;
-                    if(listener != null)
-                        listener.onLetterChanged(b[selectPos]);
+                    if (listener != null)
+                        listener.onLetterChanged(ALPHABET[selectPos]);
                     invalidate();
                 }
 
@@ -114,12 +120,11 @@ public class SideBarView extends View{
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 setBackgroundColor(sideBarBgNorColor);
-                if(listener != null){
-                    listener.onLetterReleased(b[selectPos]);
+                if (listener != null) {
+                    listener.onLetterReleased(ALPHABET[selectPos]);
                 }
                 break;
         }
-
 
 
         return true;
@@ -131,11 +136,11 @@ public class SideBarView extends View{
 
         height = getHeight();
         width = getWidth();
-        perHeight = height / b.length;
-        for (int i = 0; i < b.length; i++) {
-            canvas.drawText(b[i],width/2 - paint.measureText(b[i])/2,perHeight * i+perHeight,paint);
-            if(selectPos == i){
-                canvas.drawText(b[i],width/2 - paint.measureText(b[i])/2,perHeight * i+perHeight,paintSelect);
+        perHeight = height / ALPHABET.length;
+        for (int i = 0; i < ALPHABET.length; i++) {
+            canvas.drawText(ALPHABET[i], width / 2 - paint.measureText(ALPHABET[i]) / 2, perHeight * i + perHeight, paint);
+            if (selectPos == i) {
+                canvas.drawText(ALPHABET[i], width / 2 - paint.measureText(ALPHABET[i]) / 2, perHeight * i + perHeight, paintSelect);
             }
         }
     }
@@ -143,13 +148,13 @@ public class SideBarView extends View{
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = resolveMeasure(widthMeasureSpec, true);
-        int height = resolveMeasure(heightMeasureSpec,false);
-        setMeasuredDimension(width,height);
+        int height = resolveMeasure(heightMeasureSpec, false);
+        setMeasuredDimension(width, height);
     }
 
-    private int resolveMeasure(int measureSpec ,boolean isWidth) {
+    private int resolveMeasure(int measureSpec, boolean isWidth) {
 
-        int result = 0 ;
+        int result = 0;
         int padding = isWidth ? getPaddingLeft() + getPaddingRight() : getPaddingTop() + getPaddingBottom();
 
         // 获取宽度测量规格中的mode
@@ -158,21 +163,21 @@ public class SideBarView extends View{
         // 获取宽度测量规格中的size
         int size = MeasureSpec.getSize(measureSpec);
 
-        switch (mode){
+        switch (mode) {
             case MeasureSpec.EXACTLY:
                 result = size;
                 break;
             case MeasureSpec.AT_MOST:
-                case MeasureSpec.UNSPECIFIED:
-                    float textWidth = paint.measureText(b[0]);
-                    if(isWidth){
-                        result = getSuggestedMinimumWidth() > textWidth ? getSuggestedMinimumWidth() : (int) textWidth;
-                        result += padding;
-                        result = Math.min(result,size);
-                    }else{
-                        result = size;
-                        result = Math.max(result,size);
-                    }
+            case MeasureSpec.UNSPECIFIED:
+                float textWidth = paint.measureText(ALPHABET[0]);
+                if (isWidth) {
+                    result = getSuggestedMinimumWidth() > textWidth ? getSuggestedMinimumWidth() : (int) textWidth;
+                    result += padding;
+                    result = Math.min(result, size);
+                } else {
+                    result = size;
+                    result = Math.max(result, size);
+                }
 
                 break;
         }
@@ -193,17 +198,17 @@ public class SideBarView extends View{
     }
 
 
-    public interface LetterSelectListener{
+    public interface LetterSelectListener {
         void onLetterSelected(String letter);
+
         void onLetterChanged(String letter);
+
         void onLetterReleased(String letter);
     }
 
     private LetterSelectListener listener;
-    public void setOnLetterSelectListen(LetterSelectListener listen){
+
+    public void setOnLetterSelectListen(LetterSelectListener listen) {
         this.listener = listen;
     }
-
-
-
 }

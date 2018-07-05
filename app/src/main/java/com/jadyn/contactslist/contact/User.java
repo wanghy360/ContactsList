@@ -5,9 +5,9 @@ import com.jadyn.contactslist.R;
 /**
  * Created by Administrator on 2016/1/8.
  */
-public class User {
+public class User extends PinyinIndexBean{
     private String name;
-    private String letter;
+
     private int icon = R.mipmap.ic_launcher;
 
     public int getIcon() {
@@ -26,11 +26,5 @@ public class User {
         this.name = name;
     }
 
-    public String getLetter() {
-        return letter;
-    }
 
-    public void setLetter(String letter) {
-        this.letter = letter;
-    }
 }
